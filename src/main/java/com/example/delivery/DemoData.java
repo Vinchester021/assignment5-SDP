@@ -138,4 +138,37 @@ public final class DemoData {
                 6.0
         );
     }
+
+    public static DeliveryRequest createUrgentRequest() {
+        return new DeliveryRequest(
+                "DELIVERY-URGENT",
+                DeliveryPriority.URGENT,
+                10_000,
+                25,
+                false,
+                6.0
+        );
+    }
+
+    public static DeliveryRequest createEconomyRequest() {
+        return new DeliveryRequest(
+                "DELIVERY-ECONOMY",
+                DeliveryPriority.ECONOMY,
+                2_000,
+                60,
+                false,
+                6.0
+        );
+    }
+
+    public static DeliveryRequest createEcoRequest() {
+        return new DeliveryRequest(
+                "DELIVERY-ECO",
+                DeliveryPriority.ECO,
+                10_000,
+                60,
+                true,
+                2.0
+        );
+    }
 }

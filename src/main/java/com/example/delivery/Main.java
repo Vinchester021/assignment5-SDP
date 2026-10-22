@@ -47,6 +47,40 @@ public class Main {
 
         System.out.println("\n--- 4. Balanced strategy ---");
         printDecision(planner.plan(routes, request));
+
+        System.out.println(
+                "\n=== AUTOMATIC STRATEGY SELECTION ==="
+        );
+
+        StrategySelector selector = new StrategySelector();
+
+        List<DeliveryRequest> requests = List.of(
+                DemoData.createUrgentRequest(),
+                DemoData.createEconomyRequest(),
+                DemoData.createEcoRequest(),
+                DemoData.createStandardRequest()
+        );
+
+        for (DeliveryRequest currentRequest : requests) {
+            RouteStrategy selectedStrategy =
+                    selector.selectStrategy(currentRequest);
+
+            planner.setStrategy(selectedStrategy);
+
+            System.out.println(
+                    "\nRequest: "
+                            + currentRequest.requestId()
+            );
+
+            System.out.println(
+                    "Priority: "
+                            + currentRequest.priority()
+            );
+
+            printDecision(
+                    planner.plan(routes, currentRequest)
+            );
+        }
     }
 
     private static void printDecision(
