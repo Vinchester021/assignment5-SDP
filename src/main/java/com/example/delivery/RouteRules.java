@@ -14,23 +14,28 @@ public final class RouteRules {
                 + route.trafficLevel().getPenaltyMinutes();
     }
 
-    public static double calculateTotalCost(
-            Route route,
+    public static double calculateDistanceCost(Route route) {
+        return route.distanceKm() * DISTANCE_COST_PER_KM;
+    }
+
+    public static double calculatePrioritySurcharge(
             DeliveryRequest request
     ) {
-        double prioritySurcharge = switch (request.priority()) {
+        return switch (request.priority()) {
             case URGENT -> 1000.0;
             case STANDARD -> 300.0;
             case ECO -> 200.0;
             case ECONOMY -> 0.0;
         };
+    }
 
-        double distanceCost =
-                route.distanceKm() * DISTANCE_COST_PER_KM;
-
+    public static double calculateTotalCost(
+            Route route,
+            DeliveryRequest request
+    ) {
         return route.baseCost()
-                + distanceCost
-                + prioritySurcharge
+                + calculateDistanceCost(route)
+                + calculatePrioritySurcharge(request)
                 + route.additionalFees();
     }
 
