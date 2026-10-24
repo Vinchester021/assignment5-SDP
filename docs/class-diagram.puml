@@ -1,0 +1,119 @@
+@startuml
+title Smart Delivery Route Optimization Class Diagram
+
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+interface RouteStrategy {
+    + selectRoute(routes: List<Route>, request: DeliveryRequest): RouteDecision
+    + getStrategyName(): String
+}
+
+class RoutePlanner {
+    - strategy: RouteStrategy
+    + RoutePlanner(strategy: RouteStrategy)
+    + setStrategy(strategy: RouteStrategy): void
+    + plan(routes: List<Route>, request: DeliveryRequest): RouteDecision
+    + getStrategy(): RouteStrategy
+}
+
+class FastestRouteStrategy
+class CheapestRouteStrategy
+class EcoFriendlyRouteStrategy {
+    - emissionWeight: double
+    - distanceWeight: double
+}
+class BalancedRouteStrategy {
+    - timeWeight: double
+    - costWeight: double
+    - distanceWeight: double
+    - emissionWeight: double
+}
+class SafestRouteStrategy
+
+class StrategySelector {
+    - strategies: Map<DeliveryPriority, RouteStrategy>
+    + registerStrategy(priority, strategy): void
+    + selectStrategy(request): RouteStrategy
+}
+
+class StrategyComparisonService {
+    - strategies: List<RouteStrategy>
+    + compare(routes, request): List<RouteDecision>
+}
+
+class RouteDecision <<record>> {
+    + selectedRoute: Route
+    + strategyName: String
+    + score: double
+    + explanation: String
+}
+
+class Route <<record>> {
+    + id: String
+    + origin: Location
+    + destination: Location
+    + distanceKm: double
+    + estimatedMinutes: int
+    + baseCost: double
+    + additionalFees: double
+    + carbonEmissionKg: double
+    + trafficLevel: TrafficLevel
+    + available: boolean
+    + safetyScore: double
+}
+
+class Location <<record>> {
+    + name: String
+    + latitude: double
+    + longitude: double
+}
+
+class DeliveryRequest <<record>> {
+    + requestId: String
+    + priority: DeliveryPriority
+    + maxBudget: double
+    + maxDeliveryMinutes: int
+    + ecoPreferred: boolean
+    + maxCarbonEmissionKg: double
+}
+
+enum DeliveryPriority {
+    URGENT
+    ECONOMY
+    ECO
+    STANDARD
+}
+
+enum TrafficLevel {
+    LOW
+    MEDIUM
+    HIGH
+}
+
+class RouteRules
+class NoSuitableRouteException
+
+RouteStrategy <|.. FastestRouteStrategy
+RouteStrategy <|.. CheapestRouteStrategy
+RouteStrategy <|.. EcoFriendlyRouteStrategy
+RouteStrategy <|.. BalancedRouteStrategy
+RouteStrategy <|.. SafestRouteStrategy
+
+RoutePlanner --> RouteStrategy : delegates
+StrategySelector --> RouteStrategy : selects
+StrategyComparisonService o--> RouteStrategy : compares
+
+RouteStrategy ..> Route
+RouteStrategy ..> DeliveryRequest
+RouteStrategy ..> RouteDecision
+RouteStrategy ..> RouteRules
+
+RouteDecision --> Route
+Route --> Location
+Route --> TrafficLevel
+DeliveryRequest --> DeliveryPriority
+
+NoSuitableRouteException --|> RuntimeException
+
+@enduml

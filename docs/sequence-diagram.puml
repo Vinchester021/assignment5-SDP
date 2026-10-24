@@ -1,0 +1,30 @@
+@startuml
+title Automatic Route Strategy Selection Sequence
+
+actor Client
+participant StrategySelector
+participant RoutePlanner
+participant FastestRouteStrategy
+participant RouteRules
+participant RouteDecision
+
+Client -> StrategySelector : selectStrategy(urgentRequest)
+StrategySelector --> Client : FastestRouteStrategy
+
+Client -> RoutePlanner : setStrategy(fastestStrategy)
+Client -> RoutePlanner : plan(routes, urgentRequest)
+
+RoutePlanner -> FastestRouteStrategy : selectRoute(routes, urgentRequest)
+
+loop For every candidate route
+    FastestRouteStrategy -> RouteRules : findViolation(route, request)
+    RouteRules --> FastestRouteStrategy : eligible or rejection reason
+end
+
+FastestRouteStrategy -> RouteDecision : create selected route decision
+RouteDecision --> FastestRouteStrategy : decision
+
+FastestRouteStrategy --> RoutePlanner : RouteDecision
+RoutePlanner --> Client : RouteDecision
+
+@enduml
