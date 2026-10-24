@@ -81,6 +81,19 @@ public class Main {
                     planner.plan(routes, currentRequest)
             );
         }
+
+        System.out.println(
+                "\n=== FIFTH STRATEGY DEMONSTRATION ==="
+        );
+
+        planner.setStrategy(
+                new SafestRouteStrategy()
+        );
+
+        printDecision(
+                planner.plan(routes, request)
+        );
+
     }
 
     private static void printDecision(
@@ -103,4 +116,7 @@ public class Main {
         System.out.println("Explanation:");
         System.out.println(decision.explanation());
     }
+
+
+
 }
