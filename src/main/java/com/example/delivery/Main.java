@@ -94,6 +94,65 @@ public class Main {
                 planner.plan(routes, request)
         );
 
+        System.out.println(
+                "\n=== STRATEGY COMPARISON MODE ==="
+        );
+
+        StrategyComparisonService comparisonService =
+                new StrategyComparisonService(
+                        List.of(
+                                new FastestRouteStrategy(),
+                                new CheapestRouteStrategy(),
+                                new EcoFriendlyRouteStrategy(),
+                                new BalancedRouteStrategy(),
+                                new SafestRouteStrategy()
+                        )
+                );
+
+        List<RouteDecision> comparisonResults =
+                comparisonService.compare(routes, request);
+
+        for (RouteDecision comparisonDecision : comparisonResults) {
+            Route selectedRoute =
+                    comparisonDecision.selectedRoute();
+
+            System.out.println(
+                    "\nStrategy: "
+                            + comparisonDecision.strategyName()
+            );
+
+            System.out.println(
+                    "Selected route: " + selectedRoute.id()
+            );
+
+            System.out.println(
+                    "Time: "
+                            + RouteRules.calculateFinalMinutes(
+                            selectedRoute
+                    )
+                            + " minutes"
+            );
+
+            System.out.printf(
+                    "Cost: %.2f%n",
+                    RouteRules.calculateTotalCost(
+                            selectedRoute,
+                            request
+                    )
+            );
+
+            System.out.printf(
+                    "CO2: %.2f kg%n",
+                    selectedRoute.carbonEmissionKg()
+            );
+
+            System.out.printf(
+                    "Strategy score: %.3f%n",
+                    comparisonDecision.score()
+            );
+        }
+
+
     }
 
     private static void printDecision(
